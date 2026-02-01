@@ -25,19 +25,11 @@ export function WorkoutDetail({ workout, apiWorkout, onStart, onClose }: Workout
 
     return (
         <div className="min-h-screen bg-black text-white pb-6">
-            {/* Header with Close and Play */}
+            {/* Header with Close */}
             <div className="flex items-center justify-between px-6 pt-8 pb-4">
                 <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
                     <X className="w-5 h-5" />
                 </button>
-
-                <Button
-                    onClick={onStart}
-                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg"
-                >
-                    <Play className="w-5 h-5 fill-white" />
-                    Lancer la séance
-                </Button>
             </div>
 
             {/* Workout Title & Category */}

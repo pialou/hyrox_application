@@ -99,13 +99,16 @@ export function WorkoutPlayer({ workout, onExit }: WorkoutPlayerProps) {
                 />
             )}
 
-            {currentSection.type === "ForTime" && (
-                <ForTimePlayer
-                    section={currentSection}
-                    elapsedTime={elapsedTime}
-                    onComplete={complete}
-                />
-            )}
+            {(currentSection.type === "ForTime" ||
+                currentSection.type === "Warmup" ||
+                currentSection.type === "CoolDown" ||
+                currentSection.type === "Rounds") && (
+                    <ForTimePlayer
+                        section={currentSection}
+                        elapsedTime={elapsedTime}
+                        onComplete={complete}
+                    />
+                )}
 
             {/* Controls */}
             <div className="p-6 pb-8 bg-gradient-to-t from-black/80 to-transparent">

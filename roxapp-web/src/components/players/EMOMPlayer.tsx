@@ -1,5 +1,4 @@
 import type { WorkoutSection } from "@/types/workout";
-import { SkipForward } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EMOMPlayerProps {
@@ -13,7 +12,6 @@ export function EMOMPlayer({ section, intervalRemaining, elapsedTime, currentExe
     const { exercises, duration, intervalDuration } = section;
 
     const currentEx = exercises[currentExercise];
-    const nextEx = exercises[(currentExercise + 1) % exercises.length];
 
     const totalIntervals = duration && intervalDuration ? Math.floor(duration / intervalDuration) : 0;
     const completedIntervals = intervalDuration ? Math.floor(elapsedTime / intervalDuration) : 0;
@@ -88,18 +86,40 @@ export function EMOMPlayer({ section, intervalRemaining, elapsedTime, currentExe
                     </p>
                 </div>
 
-                {/* Next Exercise Preview - Red Card */}
-                <div className="w-full bg-red-500/20 backdrop-blur-md rounded-2xl p-4 border-2 border-red-500/50">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <SkipForward className="w-5 h-5 text-red-400" />
-                            <div>
-                                <p className="text-xs text-red-400 uppercase tracking-wider font-semibold">Suivant</p>
-                                <p className="text-lg font-bold text-white">{nextEx.name}</p>
+                {/* EMOM Cycle List */}
+                <div className="space-y-3">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold text-center">Circuit (1 Tour)</p>
+                    {exercises.map((ex, idx) => {
+                        const isActive = idx === currentExercise;
+                        return (
+                            <div
+                                key={ex.id || idx}
+                                className={cn(
+                                    "rounded-2xl p-4 border transition-all duration-300",
+                                    isActive
+                                        ? "bg-green-500/20 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+                                        : "bg-white/5 border-white/10 opacity-60"
+                                )}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className={cn(
+                                            "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
+                                            isActive ? "bg-green-500 text-black" : "bg-white/10 text-white"
+                                        )}>
+                                            {idx + 1}
+                                        </div>
+                                        <p className={cn("font-bold", isActive ? "text-white" : "text-gray-300")}>
+                                            {ex.name}
+                                        </p>
+                                    </div>
+                                    <p className={cn("text-sm", isActive ? "text-green-400" : "text-gray-500")}>
+                                        {getExerciseDetails(ex)}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <p className="text-sm text-red-300">{getExerciseDetails(nextEx)}</p>
-                    </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 // Types for Workout Player
-export type WorkoutType = "EMOM" | "AMRAP" | "ForTime" | "Rounds";
+export type WorkoutType = "EMOM" | "AMRAP" | "ForTime" | "Rounds" | "Warmup" | "CoolDown";
 
 export type Exercise = {
     id: string;
