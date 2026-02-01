@@ -71,7 +71,12 @@ export function Home() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white pb-20">
+        <div className="min-h-screen pb-20 bg-black text-white relative">
+            {/* FORCE REFRESH BANNER */}
+            <div className="bg-red-600 text-white text-center py-2 text-xs font-bold uppercase tracking-widest animate-pulse sticky top-0 z-50">
+                🚀 MISE À JOUR LIVE v1.1.0 - RECHARGEZ LA PAGE SI VOUS VOYEZ ÇA
+            </div>
+
             {/* Header */}
             <header className="px-6 pt-8 pb-4">
                 <h2 className="text-sm text-muted-foreground mb-1">Bonjour Louis</h2>
