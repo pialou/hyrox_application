@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
+console.log("Roxapp v1.1.0 - UI Update Loaded 🚀");
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
