@@ -1,4 +1,4 @@
-import { Play, X, Clock, Dumbbell, MapPin } from "lucide-react";
+import { Play, X, Clock, Dumbbell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { WorkoutStructure } from "@/types/workout";
 
