@@ -1,0 +1,52 @@
+[
+    {
+        "id": "2be0718c-b786-805f-bf1b-d9cdc2b94f2b",
+        "name": "•Bring sally up en pompes",
+        "url": "https://www.notion.so/Bring-sally-up-en-pompes-2be0718cb786805fbf1bd9cdc2b94f2b",
+        "property_dur_e_typique_record": "2min30",
+        "property_description": "",
+        "property_intensit": 4,
+        "property_distance_typique_km": 0,
+        "property_cat_gorie": "Renfo/muscu",
+        "property_objectif_physiologique": [
+            "renfo"
+        ],
+        "property_nom": "•Bring sally up en pompes"
+    },
+    {
+        "id": "2be0718c-b786-80be-9f11-f0e6f272dca6",
+        "name": "Renforcement salle séance type",
+        "url": "https://www.notion.so/Renforcement-salle-s-ance-type-2be0718cb78680be9f11f0e6f272dca6",
+        "property_dur_e_typique_record": "",
+        "property_description": "\nSéance renforcement hybride \n\nÉchauffement – 8 min\n\n• 3’ cardio doux\n• Mobilité hanches / chevilles / épaules\n• Activation : glutes + gainage\n\n\n\nBloc A – Force (18 min)\n\n• Front squat : 4×5\n• Tractions strictes ou tirage vertical : 4×6–8\nRepos 60–90 s\n\n\n\nBloc B – Chaîne postérieure & unilatéral (15 min)\n\n• Romanian deadlift : 3×8\n• Fentes marchées ou bulgarian split squat : 3×10 pas\n• Pallof press : 3×10–12 / côté\nRepos 45–60 s\n\n\n\nBloc C – Haut du corps (8 min)\n\n• Push press : 3×8\n• Rowing haltères : 3×10\n• Farmer carry : 3×30–40 m\n\n\n\nFin – Zone 2 (5–10 min)\n\n• Skierg + rameur (au choix, continu ou split)\n",
+        "property_intensit": null,
+        "property_distance_typique_km": null,
+        "property_cat_gorie": "Renfo/muscu",
+        "property_objectif_physiologique": [],
+        "property_nom": "Renforcement salle séance type"
+    },
+    {
+        "id": "2be0718c-b786-80e2-ae65-d250436b3a60",
+        "name": "Wod murph : (avec gilet lesté 9 kil) ",
+        "url": "https://www.notion.so/Wod-murph-avec-gilet-lest-9-kil-2be0718cb78680e2ae65d250436b3a60",
+        "property_dur_e_typique_record": "39 min ",
+        "property_description": "•  1600 m Run\n•  20 tours :\n    ◦  5 tractions\n    ◦  10 push ups\n    ◦  15 squats\n \n•  1600 m Run",
+        "property_intensit": 8,
+        "property_distance_typique_km": 0,
+        "property_cat_gorie": "Crossfit",
+        "property_objectif_physiologique": [],
+        "property_nom": "Wod murph : (avec gilet lesté 9 kil) "
+    },
+    {
+        "id": "2f70718c-b786-808d-9603-ddd0bf5386b0",
+        "name": "seuil course a pied ",
+        "url": "https://www.notion.so/seuil-course-a-pied-2f70718cb786808d9603ddd0bf5386b0",
+        "property_dur_e_typique_record": "",
+        "property_description": "travail au seuil (≈ allure 1 km)\nProgression sur 4 semaines\n\nObjectif : développer la capacité à maintenir une intensité élevée proche du seuil sur des durées croissantes.\nChaque séance comprend un échauffement, le bloc principal au seuil et une récupération.\n\nSemaine 1\n3 × 8 min au seuil\nRécupération : 1 min 30\n\nSemaine 2\n2 × 12 min au seuil\nRécupération : 2 min\n\nSemaine 3\n1 × 20 min au seuil\nEffort continu\n\nSemaine 4\nSemaine de récupération\n\nVariante plus exigeante (cycle suivant)\n\nSéance 1\n3 × 10 min au seuil\nRécupération : 1 min 30\n\nSéance 2\n2 × 15 min au seuil\nRécupération : 2 min\n\nSéance 3\n1 × 25 min au seuil\nEffort continu\n\nPuis une semaine de récupération avant un nouveau cycle.",
+        "property_intensit": null,
+        "property_distance_typique_km": null,
+        "property_cat_gorie": "Run",
+        "property_objectif_physiologique": [],
+        "property_nom": "seuil course a pied "
+    }
+]

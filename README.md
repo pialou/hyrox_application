@@ -1,61 +1,73 @@
-# Hyrox Application
+# React + TypeScript + Vite
 
-Application pour le suivi de sport Hyrox personnalisable.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 🏗️ Architecture
+Currently, two official plugins are available:
 
-This project uses a **3-layer architecture** for reliable AI-assisted development:
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-├── directives/          # Layer 1: SOPs in Markdown (what to do)
-├── execution/           # Layer 3: Deterministic Python scripts
-├── .tmp/                # Intermediate files (gitignored)
-├── .env                 # Environment variables (gitignored)
-├── CLAUDE.md            # Agent instructions (mirrored)
-├── AGENTS.md            # Agent instructions (mirrored)
-└── GEMINI.md            # Agent instructions (mirrored)
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-### Why This Works
-
-| Layer | Role | Contents |
-|-------|------|----------|
-| **Directives** | What to do | SOPs, goals, inputs, outputs, edge cases |
-| **Orchestration** | Decision-making | The AI agent routes, handles errors, learns |
-| **Execution** | Doing the work | Python scripts, API calls, data processing |
-
-## 🚀 Getting Started
-
-1. **Clone the repository**
-   ```bash
-   git clone <repo-url>
-   cd hyrox_application
-   ```
-
-2. **Set up environment**
-   ```bash
-   cp .env.example .env  # Then fill in your values
-   pip install python-dotenv  # Minimum dependency
-   ```
-
-3. **Create new directives**
-   - Copy `directives/_template.md`
-   - Define goals, inputs, execution steps, outputs
-
-4. **Create new scripts**
-   - Copy `execution/_template.py`
-   - Implement deterministic logic
-
-## 📁 File Organization
-
-- **Deliverables** → Google Sheets, Slides, cloud services
-- **Intermediates** → `.tmp/` (always regenerated, never committed)
-- **Credentials** → `.env`, `credentials.json`, `token.json` (gitignored)
-
-## 🔄 Self-Annealing
-
-When errors occur:
-1. Fix the script
-2. Test it
-3. Update the directive with learnings
-4. System improves over time
