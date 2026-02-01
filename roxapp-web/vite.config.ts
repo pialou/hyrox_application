@@ -14,17 +14,15 @@ export default defineConfig({
     host: "0.0.0.0",
   },
   preview: {
-    preview: {
-      host: "0.0.0.0",
-      allowedHosts: true,
-    },
-    build: {
-      rollupOptions: {
-        output: {
-          entryFileNames: `assets/[name].[hash].${Date.now()}.js`,
-          chunkFileNames: `assets/[name].[hash].${Date.now()}.js`,
-          assetFileNames: `assets/[name].[hash].${Date.now()}.[ext]`
-        }
+    host: "0.0.0.0",
+    allowedHosts: true,
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name].[hash].${Date.now()}.js`,
+        chunkFileNames: `assets/[name].[hash].${Date.now()}.js`,
+        assetFileNames: `assets/[name].[hash].${Date.now()}.[ext]`
       }
     }
   })
