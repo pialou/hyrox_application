@@ -1,0 +1,163 @@
+{
+    "name": "Strava Activity Sync",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "hours",
+                            "hoursInterval": 1
+                        }
+                    ]
+                }
+            },
+            "name": "Schedule Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                250,
+                300
+            ],
+            "id": "strava-sync-trigger"
+        },
+        {
+            "parameters": {
+                "authentication": "oAuth2",
+                "resource": "activity",
+                "operation": "getAll",
+                "returnAll": false,
+                "limit": 30,
+                "additionalFields": {
+                    "after": "={{ Math.floor((new Date().getTime() - 7 * 24 * 60 * 60 * 1000) / 1000) }}"
+                }
+            },
+            "name": "Strava - Get Activities",
+            "type": "n8n-nodes-base.strava",
+            "typeVersion": 1,
+            "position": [
+                450,
+                300
+            ],
+            "id": "strava-get-activities",
+            "credentials": {
+                "stravaOAuth2Api": {
+                    "id": "1",
+                    "name": "Strava account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const activities = $input.all();\nconst transformed = [];\n\nfor (const activity of activities) {\n  const item = activity.json;\n  \n  transformed.push({\n    strava_id: item.id.toString(),\n    activity_name: item.name,\n    activity_type: item.type,\n    activity_date: new Date(item.start_date).toISOString(),\n    distance: item.distance || 0,\n    moving_time: item.moving_time || 0,\n    elapsed_time: item.elapsed_time || 0,\n    elevation_gain: item.total_elevation_gain || 0,\n    suffer_score: item.suffer_score || null,\n    average_heartrate: item.average_heartrate || null,\n    max_heartrate: item.max_heartrate || null,\n    average_speed: item.average_speed || null,\n    raw_data: item\n  });\n}\n\nreturn transformed.map(data => ({ json: data }));"
+            },
+            "name": "Transform Data",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                300
+            ],
+            "id": "transform-strava-data"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO strava_sync (\n  strava_id,\n  activity_name,\n  activity_type,\n  activity_date,\n  distance,\n  moving_time,\n  elapsed_time,\n  elevation_gain,\n  suffer_score,\n  average_heartrate,\n  max_heartrate,\n  average_speed,\n  raw_data,\n  synced_at\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW()\n)\nON CONFLICT (strava_id) \nDO UPDATE SET\n  activity_name = EXCLUDED.activity_name,\n  activity_type = EXCLUDED.activity_type,\n  activity_date = EXCLUDED.activity_date,\n  distance = EXCLUDED.distance,\n  moving_time = EXCLUDED.moving_time,\n  elapsed_time = EXCLUDED.elapsed_time,\n  elevation_gain = EXCLUDED.elevation_gain,\n  suffer_score = EXCLUDED.suffer_score,\n  average_heartrate = EXCLUDED.average_heartrate,\n  max_heartrate = EXCLUDED.max_heartrate,\n  average_speed = EXCLUDED.average_speed,\n  raw_data = EXCLUDED.raw_data,\n  synced_at = NOW();",
+                "options": {
+                    "queryParameters": "={{ [\n  $json.strava_id,\n  $json.activity_name,\n  $json.activity_type,\n  $json.activity_date,\n  $json.distance,\n  $json.moving_time,\n  $json.elapsed_time,\n  $json.elevation_gain,\n  $json.suffer_score,\n  $json.average_heartrate,\n  $json.max_heartrate,\n  $json.average_speed,\n  JSON.stringify($json.raw_data)\n] }}"
+                }
+            },
+            "name": "PostgreSQL - Upsert",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.4,
+            "position": [
+                850,
+                300
+            ],
+            "id": "postgres-upsert",
+            "credentials": {
+                "postgres": {
+                    "id": "2",
+                    "name": "hyrox_app_db"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "UPDATE training_plan tp\nSET strava_activity_id = ss.strava_id\nFROM strava_sync ss\nWHERE tp.session_date::date = ss.activity_date::date\n  AND tp.category = 'Running'\n  AND tp.strava_activity_id IS NULL\n  AND ss.activity_type IN ('Run', 'VirtualRun');",
+                "options": {}
+            },
+            "name": "Link Workouts to Strava",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.4,
+            "position": [
+                1050,
+                300
+            ],
+            "id": "link-workouts",
+            "credentials": {
+                "postgres": {
+                    "id": "2",
+                    "name": "hyrox_app_db"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Schedule Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Strava - Get Activities",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Strava - Get Activities": {
+            "main": [
+                [
+                    {
+                        "node": "Transform Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Transform Data": {
+            "main": [
+                [
+                    {
+                        "node": "PostgreSQL - Upsert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "PostgreSQL - Upsert": {
+            "main": [
+                [
+                    {
+                        "node": "Link Workouts to Strava",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 1,
+    "updatedAt": "2026-01-29T20:45:00.000Z",
+    "versionId": "1"
+}

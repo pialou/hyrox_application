@@ -1,0 +1,7 @@
+# requirements.txt
+# Core dependencies for execution scripts
+
+python-dotenv>=1.0.0    # Environment variable loading
+requests>=2.31.0        # HTTP requests for APIs
+notion-client>=2.0.0    # Notion API client
+psycopg2-binary>=2.9.9  # PostgreSQL adapter
