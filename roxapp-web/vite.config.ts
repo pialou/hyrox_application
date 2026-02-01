@@ -25,4 +25,5 @@ export default defineConfig({
         assetFileNames: `assets/[name].[hash].${Date.now()}.[ext]`
       }
     }
-  })
+  }
+})
