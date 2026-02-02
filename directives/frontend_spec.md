@@ -18,6 +18,8 @@
     - Icon/Color (Category)
     - Title + Duration
     - Status (Planned/Done)
+    - **Interaction**: Click opens **Workout Detail** (Preview), then "Start" launches Player.
+- **Stats Widgets**: Real-time Strava Data (Distance, Charge) via Direct API (Run/Fitness only).
 - **Floater**: "Start [Session Name]" (Sticky bottom/top).
 
 ### 2. Workout Player (`/player/:id`)
