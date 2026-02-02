@@ -21,7 +21,22 @@ export function WorkoutDetail({ workout, apiWorkout, onStart, onClose }: Workout
         "Hybrid": "bg-purple-500/10 text-purple-500 border-purple-500/20",
     };
 
-    const colorClass = categoryColors[category] || categoryColors["Hyrox"];
+    // Display Name Mapping
+    const displayCategory = (() => {
+        if (category === "Hybrid" && (workout.title.includes("Renfo") || workout.title.includes("Bodyweight"))) return "Renfo/Muscu";
+        if (category === "Ironx" && (workout.title.includes("Mobilité") || workout.title.includes("Mobility"))) return "Stretching";
+        return category;
+    })();
+
+    const baseColor = categoryColors[category] || categoryColors["Hyrox"];
+
+    // Override color for Renfo/Muscu (Blue) and Stretching (Violet)
+    let finalColorClass = baseColor;
+    if (displayCategory === "Stretching") {
+        finalColorClass = "bg-violet-500/10 text-violet-500 border-violet-500/20";
+    } else if (displayCategory === "Renfo/Muscu") {
+        finalColorClass = "bg-blue-500/10 text-blue-500 border-blue-500/20";
+    }
 
     return (
         <div className="min-h-screen bg-black text-white pb-6">
@@ -34,8 +49,8 @@ export function WorkoutDetail({ workout, apiWorkout, onStart, onClose }: Workout
 
             {/* Workout Title & Category */}
             <div className="px-6 mt-4">
-                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-sm font-medium mb-3 ${colorClass}`}>
-                    {category.toUpperCase()}
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-sm font-medium mb-3 ${finalColorClass}`}>
+                    {displayCategory.toUpperCase()}
                 </div>
                 <h1 className="text-4xl font-bold mb-2">{workout.title}</h1>
 
@@ -92,9 +107,8 @@ export function WorkoutDetail({ workout, apiWorkout, onStart, onClose }: Workout
                                         <div key={exercise.id} className="flex items-center justify-between text-sm">
                                             <span className="text-white">{exerciseIdx + 1}. {exercise.name}</span>
                                             <span className="text-muted-foreground">
-                                                {exercise.reps && `${exercise.reps} reps`}
-                                                {exercise.duration && `${exercise.duration}s`}
-                                                {exercise.distance && `${exercise.distance}m`}
+                                                {exercise.distance ? `${exercise.distance}m` : (exercise.reps ? `${exercise.reps} reps` : '')}
+                                                {exercise.duration && ` ${exercise.duration}s`}
                                             </span>
                                         </div>
                                     ))}

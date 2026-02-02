@@ -18,14 +18,17 @@ export function Workouts() {
             try {
                 const fetchedApiWorkouts = await apiService.getWorkouts({ status: "planned" });
 
-                // Filter: only workouts from today onwards
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                // Filter: Include workouts from Yesterday onwards to handle timezone slips of early week workouts being stored as late previous day
+                const now = new Date();
+                const yesterday = new Date(now);
+                yesterday.setDate(now.getDate() - 1);
+                const cutOffStr = yesterday.toLocaleDateString("en-CA"); // YYYY-MM-DD
 
                 const filteredWorkouts = fetchedApiWorkouts.filter(w => {
                     if (!w.session_date) return false;
-                    const workoutDate = new Date(w.session_date);
-                    return workoutDate >= today;
+                    const wDate = new Date(w.session_date);
+                    const wDateStr = wDate.toLocaleDateString("en-CA");
+                    return wDateStr >= cutOffStr;
                 });
 
                 setApiWorkouts(filteredWorkouts);
@@ -60,33 +63,39 @@ export function Workouts() {
         return "Hyrox";
     };
 
-    // Group workouts by date
+    // Group workouts by date string (YYYY-MM-DD)
     const groupedWorkouts: Record<string, { workouts: WorkoutStructure[], apiWorkouts: any[] }> = {};
 
     workouts.forEach((workout: any) => {
         const apiWorkout = apiWorkouts.find(w => w.id === workout.id);
         const date = apiWorkout?.session_date ? new Date(apiWorkout.session_date) : new Date();
-        const dayKey = date.toISOString().split('T')[0];
+        const dateStr = date.toLocaleDateString("en-CA"); // YYYY-MM-DD
 
-        if (!groupedWorkouts[dayKey]) {
-            groupedWorkouts[dayKey] = { workouts: [], apiWorkouts: [] };
+        if (dateStr) {
+            if (!groupedWorkouts[dateStr]) {
+                groupedWorkouts[dateStr] = { workouts: [], apiWorkouts: [] };
+            }
+            groupedWorkouts[dateStr].workouts.push(workout);
+            groupedWorkouts[dateStr].apiWorkouts.push(apiWorkout);
         }
-        groupedWorkouts[dayKey].workouts.push(workout);
-        groupedWorkouts[dayKey].apiWorkouts.push(apiWorkout);
     });
 
     // Sort dates
-    const sortedDates = Object.keys(groupedWorkouts).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    const sortedDates = Object.keys(groupedWorkouts).sort();
 
     const formatDateLabel = (dateStr: string) => {
-        const date = new Date(dateStr);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        date.setHours(0, 0, 0, 0);
+        const now = new Date();
+        const todayStr = now.toLocaleDateString("en-CA");
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+        const yesterdayStr = yesterday.toLocaleDateString("en-CA");
 
-        if (date.getTime() === today.getTime()) return "Aujourd'hui";
+        // Compare strings
+        if (dateStr === todayStr) return "Aujourd'hui";
+        if (dateStr === yesterdayStr) return "Hier";
 
-        // Use weekday names for all future days (no "Demain")
+        // Parse for Day Name
+        const date = new Date(`${dateStr}T12:00:00`);
         const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
         return weekdays[date.getDay()];
     };

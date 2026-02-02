@@ -25,6 +25,7 @@ export type WorkoutSection = {
 export type WorkoutStructure = {
     id: string;
     title: string;
+    date?: string; // ISO Date string (YYYY-MM-DD)
     sections: WorkoutSection[]; // Support multi-part workouts (e.g., EMOM -> AMRAP)
 }
 

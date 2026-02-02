@@ -30,6 +30,7 @@ export function WorkoutPlayer({ workout, onExit }: WorkoutPlayerProps) {
         resume,
         reset,
         complete,
+        nextRound,
     } = useWorkoutTimer(currentSection);
 
     // Keep screen awake while timer is running
@@ -41,6 +42,12 @@ export function WorkoutPlayer({ workout, onExit }: WorkoutPlayerProps) {
             reset();
         }
     };
+
+    // Auto-advance when distinct section completes (except last one)
+    // We use a simple check on state change.
+    if (state === "completed" && currentSectionIndex < workout.sections.length - 1) {
+        handleNextSection();
+    }
 
     const hasMultipleSections = workout.sections.length > 1;
     const isLastSection = currentSectionIndex === workout.sections.length - 1;
@@ -96,6 +103,7 @@ export function WorkoutPlayer({ workout, onExit }: WorkoutPlayerProps) {
                     section={currentSection}
                     remainingTime={remainingTime}
                     currentRound={currentRound}
+                    onCompleteRound={nextRound}
                 />
             )}
 

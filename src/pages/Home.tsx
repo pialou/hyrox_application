@@ -5,14 +5,22 @@ import { WeeklyCalendar } from "../components/WeeklyCalendar";
 import { StatsWidget } from "../components/StatsWidget";
 import { WorkoutCard } from "../components/WorkoutCard";
 import { WorkoutPlayer } from "../components/WorkoutPlayer";
+import { WorkoutDetail } from "../components/WorkoutDetail";
 import { BottomNav } from "../components/BottomNav";
 
 export function Home() {
-    const [selectedWorkout, setSelectedWorkout] = useState<WorkoutStructure | null>(null);
+    const [viewingWorkout, setViewingWorkout] = useState<WorkoutStructure | null>(null);
+    const [playingWorkout, setPlayingWorkout] = useState<WorkoutStructure | null>(null);
     const [workouts, setWorkouts] = useState<WorkoutStructure[]>([]);
     const [apiWorkouts, setApiWorkouts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({ total_distance_km: 0, total_load: 0 });
+    const [stats, setStats] = useState<{
+        total_distance_km: number;
+        total_load: number;
+        activity_count?: number;
+        history?: { name: string; val: number }[];
+        loadHistory?: { name: string; val: number }[];
+    }>({ total_distance_km: 0, total_load: 0 });
 
     // Fetch real workouts and stats from API
     useEffect(() => {
@@ -36,6 +44,7 @@ export function Home() {
                     .map(w => ({
                         id: w.id,
                         title: w.title,
+                        date: w.session_date, // Map API date
                         sections: w.planned_details.sections || []
                     }));
 
@@ -56,54 +65,80 @@ export function Home() {
         const cat = apiWorkout?.category?.toLowerCase() || "";
         if (cat.includes("hyrox")) return "Hyrox";
         if (cat.includes("run")) return "Run";
-        if (cat.includes("cross")) return "CrossFit";
-        if (cat.includes("renfo") || cat.includes("muscu") || cat.includes("hybrid")) return "Renfo/Muscu";
+        if (cat.includes("cross") || cat.includes("metcon")) return "CrossFit";
+        if (cat.includes("renfo") || cat.includes("muscu") || cat.includes("hybrid") || cat.includes("bodyweight")) return "Renfo/Muscu";
         return "Hyrox"; // Default
     };
 
-    if (selectedWorkout) {
+    if (playingWorkout) {
         return (
             <WorkoutPlayer
-                workout={selectedWorkout}
-                onExit={() => setSelectedWorkout(null)}
+                workout={playingWorkout}
+                onExit={() => setPlayingWorkout(null)}
+            />
+        );
+    }
+
+    if (viewingWorkout) {
+        const apiData = apiWorkouts.find(w => w.id === viewingWorkout.id);
+        return (
+            <WorkoutDetail
+                workout={viewingWorkout}
+                apiWorkout={apiData || {}}
+                onStart={() => {
+                    setViewingWorkout(null);
+                    setPlayingWorkout(viewingWorkout);
+                }}
+                onClose={() => setViewingWorkout(null)}
             />
         );
     }
 
     return (
         <div className="min-h-screen pb-20 bg-black text-white relative">
-            {/* FORCE REFRESH BANNER */}
-            <div className="bg-red-600 text-white text-center py-2 text-xs font-bold uppercase tracking-widest animate-pulse sticky top-0 z-50">
-                🚀 MISE À JOUR LIVE v1.1.0 - RECHARGEZ LA PAGE SI VOUS VOYEZ ÇA
-            </div>
-
             {/* Header */}
             <header className="px-6 pt-8 pb-4">
-                <h2 className="text-sm text-muted-foreground mb-1">Bonjour Louis</h2>
-                <h1 className="text-3xl font-bold">Prochaine séance</h1>
+                <h2 className="text-xl font-bold text-white mb-1">Bonjour Louis</h2>
             </header>
 
             {/* Weekly Calendar */}
             <div className="px-6 mb-8">
-                <WeeklyCalendar />
+                <WeeklyCalendar workouts={workouts} />
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4 px-6 mb-8">
                 <StatsWidget
                     type="distance"
-                    value={Number(stats.total_distance_km).toFixed(1)}
+                    value={Number(stats.total_distance_km || 0).toFixed(1)}
                     unit="km"
                     label="Distance"
                     subtext="Cette semaine"
+                    history={stats.history || [
+                        { name: 'S-3', val: 0 },
+                        { name: 'S-2', val: 0 },
+                        { name: 'S-1', val: 0 },
+                        { name: 'This', val: Number(stats.total_distance_km || 0) }
+                    ]}
                 />
                 <StatsWidget
                     type="load"
-                    value={Number(stats.total_load)}
+                    value={Number(stats.total_load || 0)}
                     unit="TSS"
                     label="Charge"
                     subtext="Suffer Score"
+                    history={stats.loadHistory || [
+                        { name: 'S-3', val: 0 },
+                        { name: 'S-2', val: 0 },
+                        { name: 'S-1', val: 0 },
+                        { name: 'This', val: Number(stats.total_load || 0) }
+                    ]}
                 />
+            </div>
+
+            {/* Workout List Header */}
+            <div className="px-6 mb-4">
+                <h1 className="text-2xl font-bold">Prochaine séance</h1>
             </div>
 
             {/* Workout List - Only show 2 next workouts */}
@@ -118,19 +153,19 @@ export function Home() {
                         <p className="text-sm mt-2">Utilisez le chat pour générer un plan</p>
                     </div>
                 ) : (
-                    workouts.slice(0, 2).map((workout, idx) => {
+                    workouts.slice(0, 2).map((workout) => {
                         const matchingApiWorkout = apiWorkouts.find(w => w.id === workout.id);
                         const cardCategory = matchingApiWorkout ? getCategoryFromAPI(matchingApiWorkout) : "Hyrox";
 
                         return (
-                            <WorkoutCard
-                                key={workout.id}
-                                title={workout.title}
-                                duration={workout.sections[0]?.duration ? `${Math.floor(workout.sections[0].duration / 60)} min` : "N/A"}
-                                category={cardCategory}
-                                intensity={8}
-                                onStartSession={idx === 0 ? () => setSelectedWorkout(workout) : undefined}
-                            />
+                            <div key={workout.id} onClick={() => setViewingWorkout(workout)} className="cursor-pointer active:scale-95 transition-transform">
+                                <WorkoutCard
+                                    title={workout.title}
+                                    duration={workout.sections[0]?.duration ? `${Math.floor(workout.sections[0].duration / 60)} min` : "N/A"}
+                                    category={cardCategory}
+                                    intensity={8}
+                                />
+                            </div>
                         );
                     })
                 )}

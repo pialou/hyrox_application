@@ -13,29 +13,26 @@ interface StatsWidgetProps {
     unit?: string;
     label: string;
     subtext: string;
+    history?: { name: string; val: number }[];
 }
 
-const distanceData = [
-    { name: 'S-3', val: 32 },
-    { name: 'S-2', val: 45 },
-    { name: 'S-1', val: 38 },
-    { name: 'This', val: 17.1 },
-];
-
-const loadData = [
-    { name: 'S-3', val: 350 },
-    { name: 'S-2', val: 420 },
-    { name: 'S-1', val: 380 },
-    { name: 'This', val: 410 },
-];
-
-export function StatsWidget({ type, value, unit, label, subtext }: StatsWidgetProps) {
+export function StatsWidget({ type, value, unit, label, subtext, history = [] }: StatsWidgetProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     // Config based on type
     const isDistance = type === "distance";
     const Icon = isDistance ? Footprints : Zap;
-    const data = isDistance ? distanceData : loadData;
+
+    // Default mock if no history passed (or empty)
+    // User requested "Real Data", so if empty, show empty or minimal.
+    // Ideally we pass real data from Home.
+    const chartData = history.length > 0 ? history : [
+        { name: 'S-3', val: 0 },
+        { name: 'S-2', val: 0 },
+        { name: 'S-1', val: 0 },
+        { name: 'This', val: Number(value) || 0 }, // At least show current
+    ];
+
     const barColor = isDistance ? "#22c55e" : "#3b82f6"; // Green for run, Blue for load
 
     return (
@@ -70,7 +67,7 @@ export function StatsWidget({ type, value, unit, label, subtext }: StatsWidgetPr
                         </DrawerHeader>
                         <div className="p-4 pb-0 h-[250px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={data}>
+                                <BarChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
                                     <XAxis
                                         dataKey="name"

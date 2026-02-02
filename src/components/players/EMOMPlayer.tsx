@@ -97,15 +97,15 @@ export function EMOMPlayer({ section, intervalRemaining, elapsedTime, currentExe
                                 className={cn(
                                     "rounded-2xl p-4 border transition-all duration-300",
                                     isActive
-                                        ? "bg-green-500/20 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
-                                        : "bg-white/5 border-white/10 opacity-60"
+                                        ? "bg-green-500/20 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]" // GREEN ACTIVE
+                                        : "bg-red-500/10 border-red-500/20 opacity-80" // RED INACTIVE
                                 )}
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className={cn(
                                             "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
-                                            isActive ? "bg-green-500 text-black" : "bg-white/10 text-white"
+                                            isActive ? "bg-green-500 text-black" : "bg-red-500/20 text-red-500" // GREEN BADGE VS RED BADGE
                                         )}>
                                             {idx + 1}
                                         </div>
@@ -113,7 +113,7 @@ export function EMOMPlayer({ section, intervalRemaining, elapsedTime, currentExe
                                             {ex.name}
                                         </p>
                                     </div>
-                                    <p className={cn("text-sm", isActive ? "text-green-400" : "text-gray-500")}>
+                                    <p className={cn("text-sm", isActive ? "text-green-400" : "text-red-400")}>
                                         {getExerciseDetails(ex)}
                                     </p>
                                 </div>
