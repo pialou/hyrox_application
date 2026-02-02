@@ -221,8 +221,8 @@ export const apiService = {
                 };
 
             } catch (err) {
-                console.error("Direct Strava Error:", err);
-                return { total_distance_km: 0, total_load: 0, activity_count: 0, history: [], loadHistory: [] };
+                console.error("Direct Strava Error (Falling back to Backend):", err);
+                // Do NOT return here. Fall through to Backend Fallback.
             }
         }
 
