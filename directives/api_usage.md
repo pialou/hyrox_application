@@ -203,34 +203,28 @@ ain.com
 
 ## Deployment
 
-### Option 1: Tailscale Only (Current)
-API accessible uniquement sur le réseau Tailscale (100.107.228.60:3001)
+### Option 1: Self-Hosted (Linux Server) - CURRENT
+- **Server**: `pialousport` (100.107.228.60)
+- **Frontend**: Served via `pm2` on port `4173`.
+- **Backend**: Served via Node on port `3001`.
+- **Access**: `http://100.107.228.60:4173` (Tailscale VPN Required).
 
-### Option 2: Internet Public (Recommended)
-
-#### A. Cloudflare Tunnel
+### Update Procedure
+Use the automated script from your local machine:
 ```bash
-# Sur pialousport
-cloudflared tunnel create hyrox-api
-cloudflared tunnel route dns hyrox-api api.hyrox.yourdomain.com
-cloudflared tunnel run --url http://localhost:3001 hyrox-api
+sh deploy_server.sh
 ```
+This script performs `rsync`, builds on the server, and restarts the `pm2` process.
 
-#### B. ngrok (Dev/Testing)
+### Option 2: Internet Public (Future)
+To expose the API/Frontend to the public internet securely:
+
+#### Cloudflare Tunnel
 ```bash
-# Sur pialousport
-ngrok http 3001
-# URL: https://random-id.ngrok.io
-```
-
-#### C. Reverse Proxy avec Nginx
-Si tu as déjà un domaine + Nginx sur pialousport:
-```nginx
-location /api/ {
-  proxy_pass http://localhost:3001/api/;
-  proxy_set_header Host $host;
-  proxy_set_header X-Real-IP $remote_addr;
-}
+# On pialousport
+cloudflared tunnel create hyrox-app
+cloudflared tunnel route dns hyrox-app your-domain.com
+cloudflared tunnel run --url http://localhost:4173 hyrox-app
 ```
 
 ---

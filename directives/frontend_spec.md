@@ -50,3 +50,9 @@
 ### Audio
 - Web Audio API or simple HTML5 Audio for beeps.
 - `SpeechSynthesis` API for announcements.
+
+## Deployment (Self-Hosted)
+- **Host**: `pialousport` (Linux Server).
+- **URL**: `http://100.107.228.60:4173` (Tailscale Network).
+- **Process Manager**: `pm2` (name: `hyrox-app`).
+- **Update Strategy**: Run `sh deploy_server.sh` from local machine.
