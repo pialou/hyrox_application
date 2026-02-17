@@ -39,7 +39,7 @@ export function WorkoutDetail({ workout, apiWorkout, onStart, onClose }: Workout
     }
 
     return (
-        <div className="min-h-screen bg-black text-white pb-6">
+        <div className="min-h-screen max-h-screen overflow-y-auto bg-black text-white pb-24">
             {/* Header with Close */}
             <div className="flex items-center justify-between px-6 pt-8 pb-4">
                 <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">

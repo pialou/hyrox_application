@@ -39,6 +39,7 @@ export function Home() {
                 setStats(fetchedStats);
 
                 // Transform API workouts to WorkoutStructure
+                const now = new Date();
                 const transformed: WorkoutStructure[] = fetchedWorkouts
                     .filter(w => w.planned_details && typeof w.planned_details === 'object')
                     .map(w => ({
@@ -46,7 +47,10 @@ export function Home() {
                         title: w.title,
                         date: w.session_date, // Map API date
                         sections: w.planned_details.sections || []
-                    }));
+                    }))
+                    // Filter future sessions only and sort by date ascending
+                    .filter(w => new Date(w.date) >= new Date(now.toDateString()))
+                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
                 setWorkouts(transformed);
             } catch (error) {

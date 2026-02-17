@@ -6,9 +6,12 @@
  * for the Hyrox Intel training application.
  */
 
+// @ts-ignore
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+// @ts-ignore
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+// @ts-ignore
 import pg from "pg";
 
 const { Pool } = pg;
@@ -81,11 +84,19 @@ async function n8nRequest(
 // Zod Schemas
 // ============================================================================
 
+// Define explicit primitive types for SQL parameters and data to satisfy Gemini's strict schema requirements
+const PrimitiveSchema = z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.null()
+]);
+
 const QuerySchema = z.object({
     sql: z.string()
         .min(1, "SQL query is required")
         .describe("SQL SELECT query to execute. Only SELECT queries are allowed for safety."),
-    params: z.array(z.any())
+    params: z.array(PrimitiveSchema)
         .optional()
         .default([])
         .describe("Optional array of parameters for parameterized queries"),
@@ -99,14 +110,14 @@ const TableNameSchema = z.object({
 
 const InsertSchema = z.object({
     table: z.string().min(1).describe("Table name"),
-    data: z.record(z.any()).describe("Object with column names as keys and values to insert"),
+    data: z.record(z.string(), PrimitiveSchema).describe("Object with column names as keys and values to insert"),
 }).strict();
 
 const UpdateSchema = z.object({
     table: z.string().min(1).describe("Table name"),
-    data: z.record(z.any()).describe("Object with column names and new values"),
+    data: z.record(z.string(), PrimitiveSchema).describe("Object with column names and new values"),
     where: z.string().min(1).describe("WHERE clause without the WHERE keyword (e.g., 'id = $1')"),
-    whereParams: z.array(z.any()).describe("Parameters for the WHERE clause"),
+    whereParams: z.array(PrimitiveSchema).describe("Parameters for the WHERE clause"),
 }).strict();
 
 const WorkflowIdSchema = z.object({
@@ -115,7 +126,7 @@ const WorkflowIdSchema = z.object({
 
 const ExecuteWorkflowSchema = z.object({
     workflowId: z.string().min(1).describe("n8n workflow ID to execute"),
-    data: z.record(z.any()).optional().describe("Optional data to pass to the workflow"),
+    data: z.record(z.string(), PrimitiveSchema).optional().describe("Optional data to pass to the workflow"),
 }).strict();
 
 // ============================================================================
@@ -154,7 +165,7 @@ Examples:
             openWorldHint: false,
         },
     },
-    async (params) => {
+    async (params: z.infer<typeof QuerySchema>) => {
         try {
             // Security: Only allow SELECT queries
             const normalizedSql = params.sql.trim().toUpperCase();
@@ -265,7 +276,7 @@ server.registerTool(
             openWorldHint: false,
         },
     },
-    async (params) => {
+    async (params: z.infer<typeof TableNameSchema>) => {
         try {
             const result = await executeQuery(`
         SELECT 
@@ -336,7 +347,7 @@ Example:
             openWorldHint: false,
         },
     },
-    async (params) => {
+    async (params: z.infer<typeof InsertSchema>) => {
         try {
             const columns = Object.keys(params.data);
             const values = Object.values(params.data);
@@ -387,7 +398,7 @@ Example:
             openWorldHint: false,
         },
     },
-    async (params) => {
+    async (params: z.infer<typeof UpdateSchema>) => {
         try {
             const columns = Object.keys(params.data);
             const values = Object.values(params.data);
@@ -400,7 +411,7 @@ Example:
             // Adjust WHERE params indices
             const whereClause = params.where.replace(
                 /\$(\d+)/g,
-                (_, num) => `$${parseInt(num) + columns.length}`
+                (_: string, num: string) => `$${parseInt(num) + columns.length}`
             );
 
             const sql = `
@@ -494,7 +505,7 @@ server.registerTool(
             openWorldHint: true,
         },
     },
-    async (params) => {
+    async (params: z.infer<typeof WorkflowIdSchema>) => {
         try {
             const workflow = await n8nRequest(`/workflows/${params.workflowId}`);
 
@@ -531,7 +542,7 @@ Use this to trigger the Architect workflow that structures training plans.`,
             openWorldHint: true,
         },
     },
-    async (params) => {
+    async (params: z.infer<typeof ExecuteWorkflowSchema>) => {
         try {
             const result = await n8nRequest(
                 `/workflows/${params.workflowId}/run`,

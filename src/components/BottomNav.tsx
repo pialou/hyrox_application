@@ -1,4 +1,4 @@
-import { Home as HomeIcon, Dumbbell, MessageSquare, Settings } from "lucide-react";
+import { Home as HomeIcon, Dumbbell, MessageSquare } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -23,14 +23,8 @@ export function BottomNav() {
             <NavItem
                 icon={MessageSquare}
                 label="Chat"
-                isActive={false}
-                onClick={() => {/* TODO: Chat page */ }}
-            />
-            <NavItem
-                icon={Settings}
-                label="Réglages"
-                isActive={false}
-                onClick={() => {/* TODO: Settings page */ }}
+                isActive={location.pathname === "/coach"}
+                onClick={() => navigate("/coach")}
             />
         </div>
     );

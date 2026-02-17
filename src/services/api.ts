@@ -1,7 +1,7 @@
 // API Service for Roxapp Frontend
 // Connects to backend API on pialousport
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://100.107.228.60:3001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.pialou.eu';
 
 // Generic fetch helpers
 export const get = async (endpoint: string, params: any = {}) => {
