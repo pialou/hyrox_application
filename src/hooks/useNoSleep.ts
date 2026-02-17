@@ -18,10 +18,14 @@ export function useNoSleep(isActive: boolean) {
 
         const noSleep = noSleepRef.current;
 
-        if (isActive) {
-            noSleep.enable();
-        } else {
-            noSleep.disable();
+        try {
+            if (isActive) {
+                noSleep.enable();
+            } else {
+                noSleep.disable();
+            }
+        } catch (err) {
+            console.warn("NoSleep error:", err);
         }
 
         // Cleanup on unmount

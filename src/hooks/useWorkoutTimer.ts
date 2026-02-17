@@ -31,24 +31,33 @@ export function useWorkoutTimer(section: WorkoutSection) {
 
     // Play beep sound
     const playBeep = useCallback((frequency: number = 800, duration: number = 100) => {
-        initAudio();
-        const ctx = audioContextRef.current;
-        if (!ctx) return;
+        try {
+            initAudio();
+            const ctx = audioContextRef.current;
+            if (!ctx) return;
 
-        const oscillator = ctx.createOscillator();
-        const gainNode = ctx.createGain();
+            // Resume if suspended (browser policy)
+            if (ctx.state === 'suspended') {
+                ctx.resume().catch(e => console.warn("Audio Context resume failed", e));
+            }
 
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
 
-        oscillator.frequency.value = frequency;
-        oscillator.type = "sine";
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
 
-        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration / 1000);
+            oscillator.frequency.value = frequency;
+            oscillator.type = "sine";
 
-        oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + duration / 1000);
+            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration / 1000);
+
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + duration / 1000);
+        } catch (e) {
+            console.warn("Audio playback failed:", e);
+        }
     }, [initAudio]);
 
     // Auto-advance exercise for EMOM
