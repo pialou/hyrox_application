@@ -52,6 +52,7 @@ export function Home() {
                     .filter(w => new Date(w.date) >= new Date(now.toDateString()))
                     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
+
                 setWorkouts(transformed);
             } catch (error) {
                 console.error("Failed to load data:", error);
@@ -154,7 +155,6 @@ export function Home() {
                 ) : workouts.length === 0 ? (
                     <div className="text-center py-12 text-muted-foreground">
                         <p>Aucune séance planifiée</p>
-                        <p className="text-sm mt-2">Utilisez le chat pour générer un plan</p>
                     </div>
                 ) : (
                     workouts.slice(0, 2).map((workout) => {
