@@ -1,7 +1,10 @@
 // API Service for Roxapp Frontend
 // Connects to backend API on pialousport
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.pialou.eu';
+const isVercel = typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
+const API_BASE_URL = isVercel
+    ? 'https://api.pialou.eu'
+    : (import.meta.env.VITE_API_URL || 'https://api.pialou.eu');
 
 // Generic fetch helpers
 export const get = async (endpoint: string, params: any = {}) => {
