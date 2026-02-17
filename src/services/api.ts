@@ -227,12 +227,14 @@ export const apiService = {
         }
 
         // BACKEND FALLBACK
-        const response = await fetch(`${API_BASE_URL}/api/strava/activities?type=weekly_stats`);
+        const response = await fetch(`${API_BASE_URL}/api/strava/stats`);
         if (!response.ok) throw new Error('Failed to fetch Strava stats');
         const data = await response.json();
-        // Add empty history if missing
+
         return {
-            ...data,
+            total_distance_km: Number(data.total_distance_km || 0),
+            total_load: Number(data.total_load || 0),
+            activity_count: Number(data.activity_count || 0),
             history: [],
             loadHistory: []
         };
